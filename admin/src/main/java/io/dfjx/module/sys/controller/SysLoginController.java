@@ -16,6 +16,7 @@ package io.dfjx.module.sys.controller;
 
 
 import io.dfjx.config.SystemConfig;
+import io.dfjx.module.sys.form.SysLoginForm;
 import io.dfjx.module.sys.service.SysRoleService;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -25,6 +26,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -52,19 +54,12 @@ public class SysLoginController {
     /**
      * 登录
      */
-    @ResponseBody
     @RequestMapping(value = "/sys/login", method = RequestMethod.POST)
-    // thp改 去除验证码
-    // public R login(String username, String password, String captcha) {
-    public R login(String username, String password) {
-        // String kaptcha = ShiroUtils.getKaptcha(Constants.KAPTCHA_SESSION_KEY);
-        // if(!captcha.equalsIgnoreCase(kaptcha)){
-        // return R.error("验证码不正确");
-        // }
-
+    @ResponseBody
+    public R login(@RequestBody SysLoginForm form) {
         try {
             Subject subject = ShiroUtils.getSubject();
-            UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+            UsernamePasswordToken token = new UsernamePasswordToken(form.getUsername(), form.getPassword());
             subject.login(token);
         } catch (UnknownAccountException e) {
             return R.error(e.getMessage());
@@ -82,11 +77,10 @@ public class SysLoginController {
     /**
      * 退出
      */
-    @RequestMapping(value = "logout", method = RequestMethod.GET)
-    public String logout() {
+    @RequestMapping(value = "/sys/logout", method = RequestMethod.POST)
+    public R logout() {
         ShiroUtils.logout();
-
-        return "redirect:login.html";
+        return R.ok();
 	}
 
     private static final String URL_ADMIN_INDEX = "index.html";//"index";//

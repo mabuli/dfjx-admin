@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">    
+<mapper namespace="io.dfjx.module.sys.dao.SysConfigDao">
+	<cache eviction="LRU" flushInterval="86400000" size="100" />
+	<resultMap type="io.dfjx.module.sys.entity.SysConfigEntity" id="configMap">
+		<result property="id" column="id"/>
+		<result property="paramKey" column="param_key"/>
+		<result property="paramValue" column="param_value"/>
+		<result property="remark" column="remark"/>
+		<result property="status" column="status"/>
+	</resultMap>
+	<!-- 根据key，更新value -->
+	<update id="updateValueByKey" parameterType="map">
+		update sys_config set param_value = #{paramValue} where param_key = #{paramKey}
+	</update>
+
+	<!-- 根据key，查询value -->
+	<select id="queryByKey" parameterType="string" resultMap="configMap">
+		select * from sys_config where param_key = #{paramKey}
+	</select>
+	
+</mapper>
