@@ -68,6 +68,7 @@ router.beforeEach((to, from, next) => {
             params: http.adornParams()
         }).then(({data}) => {
             if (data && data.code === 0) {
+                console.log(data.permissions)
                 fnAddDynamicMenuRoutes(data.menuList)
                 router.options.isAddDynamicMenuRoutes = true
                 sessionStorage.setItem('menuList', JSON.stringify(data.menuList || '[]'))
@@ -126,14 +127,14 @@ function fnAddDynamicMenuRoutes (menuList = [], routes = []) {
                 }
             }
             // url以http[s]://开头, 通过iframe展示
-            if (isURL(menuList[i].url)) {
+            if (isURL(menuList[i].url) || menuList[i].url.indexOf('.html')>-1) {
                 route['path'] = `i-${menuList[i].menuId}`
                 route['name'] = `i-${menuList[i].menuId}`
                 route['meta']['iframeUrl'] = menuList[i].url
             } else {
                 try {
                     route['component'] = _import(`modules/${menuList[i].url}`) || null
-                } catch (e) {}
+                } catch (e) {console.error(e)}
             }
             routes.push(route)
         }

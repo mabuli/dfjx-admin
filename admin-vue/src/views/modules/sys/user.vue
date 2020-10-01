@@ -30,50 +30,39 @@
         label="ID">
       </el-table-column>
       <el-table-column
-              prop="userCd"
-              header-align="center"
-              align="center"
-              label="用户代码">
-      </el-table-column>
-      <el-table-column
-        prop="cnName"
+        prop="userRealName"
         header-align="center"
         align="center"
         label="用户中文名">
       </el-table-column>
       <el-table-column
-              prop="userLoginName"
+              prop="username"
               header-align="center"
               align="center"
               label="用户登录名">
       </el-table-column>
       <el-table-column
-              prop="phoneNum"
+              prop="mobile"
               header-align="center"
               align="center"
               label="联系电话">
       </el-table-column>
       <el-table-column
-              prop="userType"
+              prop="status"
               header-align="center"
               align="center"
-              label="用户类型">
+              label="状态">
         <template slot-scope="scope">
-          <div v-if="scope.row.userType == 0">普通</div>
-          <div v-if="scope.row.userType == 1">管理员</div>
+          <el-tag v-if="scope.row.status === 0" size="small" type="danger">禁用</el-tag>
+          <el-tag v-else size="small">正常</el-tag>
         </template>
       </el-table-column>
       <el-table-column
-              prop="adminUnitId"
+              prop="createTime"
               header-align="center"
               align="center"
-              label="行政区划标识">
-      </el-table-column>
-      <el-table-column
-        prop="userTitle"
-        header-align="center"
-        align="center"
-        label="用户职务">
+              width="180"
+              label="创建时间">
       </el-table-column>
       <el-table-column
         fixed="right"

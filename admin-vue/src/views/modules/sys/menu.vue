@@ -2,39 +2,20 @@
   <div class="mod-menu">
     <el-form :inline="true" :model="dataForm">
       <el-form-item>
-        <el-button  type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('sys:menu:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
       </el-form-item>
     </el-form>
+
     <el-table
       :data="dataList"
+      row-key="menuId"
       border
-      style="width: 100%;" row-key="menuId">
-      <!--<el-table-column-->
-        <!--prop="menuId"-->
-        <!--header-align="center"-->
-        <!--width="100"-->
-        <!--label="ID">-->
-      <!--</el-table-column>-->
-      <!--<table-tree-column-->
-        <!--prop="name"-->
-        <!--header-align="center"-->
-        <!--treeKey="menuId"-->
-        <!--width="150"-->
-        <!--label="名称">-->
-      <!--</table-tree-column>-->
+      style="width: 100%; ">
       <el-table-column
         prop="name"
         header-align="center"
-        align="center"
-        width="150"
-        label="名称">
-      </el-table-column>
-      <el-table-column
-        prop="parentName"
-        header-align="center"
-        align="center"
-        width="100"
-        label="上级菜单">
+        min-width="150"
+        label="名称" >
       </el-table-column>
       <el-table-column
         header-align="center"
@@ -84,8 +65,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button  type="text" size="small" @click="addOrUpdateHandle(scope.row.menuId)">修改</el-button>
-          <el-button  type="text" size="small" @click="deleteHandle(scope.row.menuId)">删除</el-button>
+          <el-button v-if="isAuth('sys:menu:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.menuId)">修改</el-button>
+          <el-button v-if="isAuth('sys:menu:delete')" type="text" size="small" @click="deleteHandle(scope.row.menuId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -95,7 +76,6 @@
 </template>
 
 <script>
-  import TableTreeColumn from '@/components/table-tree-column'
   import AddOrUpdate from './menu-add-or-update'
   import { treeDataTranslate } from '@/utils'
   export default {
@@ -108,7 +88,6 @@
       }
     },
     components: {
-      TableTreeColumn,
       AddOrUpdate
     },
     activated () {
@@ -123,7 +102,7 @@
           method: 'get',
           params: this.$http.adornParams()
         }).then(({data}) => {
-          this.dataList = treeDataTranslate(data.data, 'menuId', 'parentId')
+          this.dataList = treeDataTranslate(data, 'menuId')
           this.dataListLoading = false
         })
       },
@@ -164,9 +143,3 @@
     }
   }
 </script>
-
-<style lang="scss">
-  .el-table__expand-icon {
-    float: left; margin: 0 15px;
-  }
-</style>
