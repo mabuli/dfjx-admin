@@ -8,7 +8,7 @@
     <el-table
       :data="dataList"
       border
-      style="width: 100%;" row-key="orgId">
+      style="width: 100%;" row-key="deptId">
       <el-table-column
         prop="name"
         header-align="center"
@@ -27,8 +27,8 @@
         align="center"
         label="操作">
         <template slot-scope="scope">
-          <el-button v-if="isAuth('sys:org:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.orgId)">修改</el-button>
-          <el-button v-if="isAuth('sys:org:delete')" type="text" size="small" @click="deleteHandle(scope.row.orgId)">删除</el-button>
+          <el-button v-if="isAuth('sys:org:update')" type="text" size="small" @click="addOrUpdateHandle(scope.row.deptId)">修改</el-button>
+          <el-button v-if="isAuth('sys:org:delete')" type="text" size="small" @click="deleteHandle(scope.row.deptId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -62,11 +62,11 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/sys/org/list'),
+          url: this.$http.adornUrl('/sys/dept/list'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({data}) => {
-          this.dataList = treeDataTranslate(data.data, 'orgId', 'parentId')
+          this.dataList = treeDataTranslate(data, 'deptId', 'parentId')
           this.dataListLoading = false
         })
       },
@@ -85,7 +85,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl(`/sys/org/delete/${id}`),
+            url: this.$http.adornUrl(`/sys/dept/delete/${id}`),
             method: 'post',
             data: this.$http.adornData()
           }).then(({data}) => {

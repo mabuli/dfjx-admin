@@ -15,7 +15,7 @@
           <el-tree
             :data="orgList"
             :props="orgListTreeProps"
-            node-key="orgId"
+            node-key="deptId"
             ref="orgListTree"
             @current-change="orgListTreeCurrentChangeHandle"
             :default-expand-all="true"
@@ -79,11 +79,11 @@
       init (id) {
         this.dataForm.id = id || 0
         this.$http({
-          url: this.$http.adornUrl('/sys/org/select'),
+          url: this.$http.adornUrl('/sys/dept/select'),
           method: 'get',
           params: this.$http.adornParams()
         }).then(({data}) => {
-          this.orgList = treeDataTranslate(data.orgList, 'orgId')
+          this.orgList = treeDataTranslate(data.deptList, 'deptId')
         }).then(() => {
           this.visible = true
           this.$nextTick(() => {
@@ -96,13 +96,13 @@
           } else {
             // 修改
             this.$http({
-              url: this.$http.adornUrl(`/sys/org/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/sys/dept/info/${this.dataForm.id}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
-              this.dataForm.id = data.org.orgId
-              this.dataForm.name = data.org.name
-              this.dataForm.parentId = data.org.parentId
+              this.dataForm.id = data.dept.deptId
+              this.dataForm.name = data.dept.name
+              this.dataForm.parentId = data.dept.parentId
               this.orgListTreeSetCurrentNode()
             })
           }
@@ -110,7 +110,7 @@
       },
       // 机构树选中
       orgListTreeCurrentChangeHandle (data, node) {
-        this.dataForm.parentId = data.orgId
+        this.dataForm.parentId = data.deptId
         this.dataForm.parentName = data.name
       },
       // 机构树设置当前选中节点
@@ -123,10 +123,10 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/sys/org/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/sys/dept/${!this.dataForm.id ? 'save' : 'update'}`),
               method: 'post',
               data: this.$http.adornData({
-                'orgId': this.dataForm.id || undefined,
+                'deptId': this.dataForm.id || undefined,
                 'name': this.dataForm.name,
                 'parentId': this.dataForm.parentId,
               })
