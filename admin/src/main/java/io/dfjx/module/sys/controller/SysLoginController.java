@@ -16,13 +16,18 @@ package io.dfjx.module.sys.controller;
 
 
 import io.dfjx.config.SystemConfig;
+import io.dfjx.module.sys.entity.SysUserEntity;
 import io.dfjx.module.sys.form.SysLoginForm;
 import io.dfjx.module.sys.service.SysRoleService;
+import io.dfjx.module.sys.service.SysUserService;
+import io.dfjx.module.sys.service.SysUserTokenService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,9 +50,9 @@ import io.dfjx.module.sys.shiro.ShiroUtils;
 public class SysLoginController {
 
     @Autowired
-    private SysRoleService sysRoleService;
+    private SysUserService sysUserService;
     @Autowired
-    private SystemConfig systemConfig;
+    private SysUserTokenService sysUserTokenService;
 
     private static final String SYSTEM_PROFILE = "dev";
 
@@ -58,9 +63,22 @@ public class SysLoginController {
     @ResponseBody
     public R login(@RequestBody SysLoginForm form) {
         try {
-            Subject subject = ShiroUtils.getSubject();
-            UsernamePasswordToken token = new UsernamePasswordToken(form.getUsername(), form.getPassword());
-            subject.login(token);
+            //用户信息
+            SysUserEntity user = sysUserService.queryByUserName(form.getUsername());
+
+            //账号不存在、密码错误
+            if (user == null || !user.getPassword().equals(new Sha256Hash(form.getPassword(), user.getSalt()).toHex())) {
+                return R.error("账号或密码不正确");
+            }
+
+            //账号锁定
+            if (user.getStatus() == 0) {
+                return R.error("账号已被锁定,请联系管理员");
+            }
+
+            //生成token，并保存到数据库
+            R r = sysUserTokenService.createToken(user);
+            return r;
         } catch (UnknownAccountException e) {
             return R.error(e.getMessage());
         } catch (IncorrectCredentialsException e) {
@@ -70,8 +88,6 @@ public class SysLoginController {
         } catch (AuthenticationException e) {
             return R.error("账户验证失败");
         }
-
-        return R.ok();
     }
 
     /**
@@ -79,7 +95,8 @@ public class SysLoginController {
      */
     @RequestMapping(value = "/sys/logout", method = RequestMethod.POST)
     public R logout() {
-        ShiroUtils.logout();
+        SysUserEntity user = (SysUserEntity) SecurityUtils.getSubject().getPrincipal();
+        sysUserTokenService.logout(user.getUserId());
         return R.ok();
 	}
 

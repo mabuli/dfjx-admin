@@ -25,7 +25,9 @@
 		from (select user_id from sys_user where username=#{userName}) tab
 	</insert>
 
-
+	<select id="queryByUserName" resultType="io.dfjx.module.sys.entity.SysUserEntity">
+        select * from sys_user where username = #{username}
+    </select>
 
 
 </mapper>

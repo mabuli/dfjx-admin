@@ -127,5 +127,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserDao, SysUserEntity> i
 		mp.put("roleId",roleId);
 		baseMapper.saveUserRoleInfo(mp);
 	}
-
+	@Override
+	public SysUserEntity queryByUserName(String username) {
+		return baseMapper.queryByUserName(username);
+	}
 }

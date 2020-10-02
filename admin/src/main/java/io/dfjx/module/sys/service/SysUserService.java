@@ -63,4 +63,8 @@ public interface SysUserService extends IService<SysUserEntity> {
 	 * 增加用户与角色数据
 	 */
 	void saveUserRoleInfo(String userName, long roleId);
+	/**
+	 * 根据用户名，查询系统用户
+	 */
+	SysUserEntity queryByUserName(String username);
 }
